@@ -14,6 +14,9 @@
 	</description>
     <summary>Class library for creating Actions against DevExpress XtraReports objects</summary>
     <tags>xtrareports</tags>
+	<dependencies>
+		<dependency id="gcXtraReports.Core" />
+    </dependencies>
   </metadata>
   <files>
     <file src="src\gcXtraReports.Runtime\bin\Release\gcXtraReports.Runtime.dll" target="lib\net40" />
