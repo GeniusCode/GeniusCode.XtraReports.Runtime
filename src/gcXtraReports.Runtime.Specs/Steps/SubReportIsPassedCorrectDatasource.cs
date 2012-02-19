@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using DevExpress.XtraReports.UI;
 using FluentAssertions;
-using GeniusCode.Framework.Extensions;
 using GeniusCode.XtraReports.Runtime.Actions;
 using GeniusCode.XtraReports.Runtime.Support;
 using GeniusCode.XtraReports.Runtime.UnitTests;
 using TechTalk.SpecFlow;
+using gcExtensions;
 
 namespace GeniusCode.XtraReports.Runtime.Specs.Steps
 {
