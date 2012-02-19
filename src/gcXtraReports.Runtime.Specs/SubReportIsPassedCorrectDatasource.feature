@@ -16,8 +16,6 @@ Scenario: Subreport inside of a header band
 	And the subreport's datasource should not be null
 	And the subreport action should have been fired 1 time(s)
 
-
-
 Scenario: Subreport inside of a footer band
 	Given A parent report exists
 	And the parent report has a datasource of three items
