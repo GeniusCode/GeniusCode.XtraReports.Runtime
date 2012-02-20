@@ -1,0 +1,3 @@
+C:\Data\GeniusCode.net\Misc Git Projects\GeniusCode.XtraReports.Runtime\src\gcXtraReports.Runtime\packages.config
+C:\Data\GeniusCode.net\Misc Git Projects\GeniusCode.XtraReports.Runtime\src\gcXtraReports.Runtime.Specs\packages.config
+C:\Data\GeniusCode.net\Misc Git Projects\GeniusCode.XtraReports.Runtime\src\gcXtraReports.Runtime.UnitTests\packages.config
