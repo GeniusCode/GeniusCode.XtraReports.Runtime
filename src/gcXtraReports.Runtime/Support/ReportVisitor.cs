@@ -81,7 +81,7 @@ namespace GeniusCode.XtraReports.Runtime.Support
 
         private void PublishScopedMessage(XRControl control)
         {
-            var hashcode = control.NavigateToMyReportBase().RuntimeRootReportHashCode;
+            var hashcode = ((gcXtraReport)control.NavigateToBaseReport()).RuntimeRootReportHashCode;
             var message = new ScopedControlBeforePrintMessage(hashcode, control);
             _eventAggregator.Publish(message);
         }

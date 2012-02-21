@@ -68,7 +68,6 @@
     <Compile Include="IReportControlActionFacade.cs" />
     <Compile Include="Support\GlobalMessageSubscriber.cs" />
     <Compile Include="Support\ReportVisitor.cs" />
-    <Compile Include="Support\ReportFactory.cs" />
     <Compile Include="gcXtraReport.cs">
       <SubType>Component</SubType>
     </Compile>

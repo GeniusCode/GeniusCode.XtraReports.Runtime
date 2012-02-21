@@ -24,7 +24,7 @@ namespace GeniusCode.XtraReports.Runtime
 
         public static int SetRootHashCodeOnSubreport(this XRSubreport subreportContainer)
         {
-            var myReportBase = subreportContainer.NavigateToMyReportBase();
+            var myReportBase = (gcXtraReport)subreportContainer.NavigateToBaseReport();
             var hashcode = myReportBase.RuntimeRootReportHashCode;
 
             if (hashcode == 0)

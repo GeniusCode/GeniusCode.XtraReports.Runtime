@@ -38,11 +38,11 @@ namespace GeniusCode.XtraReports.Runtime
             return newReport;
         }
 
-        public static gcXtraReport NavigateToMyReportBase(this XRControl input)
+        public static XtraReport NavigateToBaseReport(this XRControl input)
         {
             var currentParent = input.Report;
 
-            while (!(input is gcXtraReport) && !ReferenceEquals(currentParent, currentParent.Report))
+            while (!(input is XtraReport) && !ReferenceEquals(currentParent, currentParent.Report))
             {
                 currentParent = currentParent.Report;
             }
@@ -52,7 +52,7 @@ namespace GeniusCode.XtraReports.Runtime
             /*            if (!(currentParent is gcXtraReport) && currentParent is XtraReport)
                             currentParent = ((XtraReport) currentParent).ConvertReportToMyReportBase();*/
 
-            return (gcXtraReport) currentParent;
+            return (XtraReport) currentParent;
         }
 
         #region Get DataSource
@@ -152,7 +152,7 @@ namespace GeniusCode.XtraReports.Runtime
                                     from bandChildControl in GetAllControls(band)
                                     select bandChildControl;
 
-            return Enumerable.Concat(myControls, bandChildControls);
+            return myControls.Concat(bandChildControls);
         }
 
         public static IEnumerable<XRControl> GetAllControls(this Band band)
@@ -164,7 +164,7 @@ namespace GeniusCode.XtraReports.Runtime
                                 from childControl in GetAllControls(control)
                                 select childControl;
 
-            return Enumerable.Concat(myControls, childControls);
+            return myControls.Concat(childControls);
         }
 
 

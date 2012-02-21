@@ -23,7 +23,7 @@ namespace GeniusCode.XtraReports.Runtime.UnitTests
             var color = Color.Green;
             var action = new ReportControlAction<XtraReport>(r => true, r => r.BackColor = color);
 
-            var report = new ReportFactory().GetNewReport();
+            var report = new XtraReport();
             var newReport = new ReportController(report, new ReportControlActionFacade(action)).Print(r => r.ExportToMemory());
 
             Assert.AreEqual(color, newReport.BackColor);
@@ -38,14 +38,18 @@ namespace GeniusCode.XtraReports.Runtime.UnitTests
             var label1 = new XRLabel { Text = string.Empty };
             var label2 = new XRLabel { Text = "ChangeMe" };
 
-            var report = new ReportFactory().GetNewReport();
+            var report = new XtraReport();
+            report.Bands.Add(new DetailBand());
             report.Bands[0].Controls.Add(label1);
             report.Bands[0].Controls.Add(label2);
 
-            new ReportController(report, new ReportControlActionFacade(action)).Print(r => r.ExportToMemory());
+            var newReport = new ReportController(report, new ReportControlActionFacade(action)).Print(r => r.ExportToMemory());
 
-            Assert.AreNotEqual(transformText, label1.Text);
-            Assert.AreEqual(transformText, label2.Text);
+            var label1b = (XRLabel) newReport.Bands[0].Controls[0];
+            var label2b = (XRLabel)newReport.Bands[0].Controls[1];
+
+            Assert.AreNotEqual(transformText, label1b.Text);
+            Assert.AreEqual(transformText, label2b.Text);
         }
 
         [Test]
@@ -60,14 +64,21 @@ namespace GeniusCode.XtraReports.Runtime.UnitTests
             row.Cells.Add(cell);
             table.Rows.Add(row);
 
-            var report = new ReportFactory().GetNewReport();
+            var report = new XtraReport();
+            report.Bands.Add(new DetailBand());
             report.Bands[0].Controls.Add(table);
 
             //var subscriber = XRRuntimeSubscriber.SubscribeWithActions(action);
-            new ReportController(report, new ReportControlActionFacade(action)).Print(r => r.ExportToMemory());
-            
+            var reportb = new ReportController(report, new ReportControlActionFacade(action)).Print(r => r.ExportToMemory());
 
-            Assert.AreEqual(transformColor, cell.BackColor);
+            var tableB = (XRTable) reportb.Bands[0].Controls[0];
+            var rowB = tableB.Rows[0];
+            var cellb = rowB.Cells[0];
+
+
+
+
+            Assert.AreEqual(transformColor, cellb.BackColor);
         }
 
         [Test]
