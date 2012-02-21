@@ -40,8 +40,8 @@
     <Reference Include="gcExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\gcExtensions.1.0.4\lib\net40\gcExtensions.dll</HintPath>
     </Reference>
-    <Reference Include="gcXtraReports.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\gcXtraReports.Core.1.0.4\lib\net40\gcXtraReports.Core.dll</HintPath>
+    <Reference Include="gcXtraReports.Core">
+      <HintPath>..\packages\gcXtraReports.Core.1.0.7\lib\net40\gcXtraReports.Core.dll</HintPath>
     </Reference>
     <Reference Include="nunit.core.interfaces">
       <HintPath>..\packages\SpecFlow.NUnit.1.0\..\NUnit.2.5.10.11092\tools\lib\nunit.core.interfaces.dll</HintPath>

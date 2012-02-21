@@ -1,0 +1,8 @@
+﻿<NUnitProject>
+  <Settings activeconfig="Debug" />
+  <Config name="Debug" binpathtype="Auto">
+    <assembly path="bin\Release\gcXtraReports.Runtime.UnitTests.dll" />
+    <assembly path="..\gcXtraReports.Runtime.Specs\bin\Release\gcXtraReports.Runtime.Specs.dll" />
+  </Config>
+  <Config name="Release" binpathtype="Auto" />
+</NUnitProject>
