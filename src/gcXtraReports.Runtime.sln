@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gcXtraReports.Runtime", "gc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gcXtraReports.Runtime.Specs", "gcXtraReports.Runtime.Specs\gcXtraReports.Runtime.Specs.csproj", "{1F7419AF-5A5B-4D9E-931E-B703D8A24546}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gcXtraReports.Runtime.UnitTests", "gcXtraReports.Runtime.UnitTests\gcXtraReports.Runtime.UnitTests.csproj", "{B3254A1C-0A73-4A04-9B96-268E3F66CD38}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gcXtraReports.Runtime.Tests", "gcXtraReports.Runtime.UnitTests\gcXtraReports.Runtime.Tests.csproj", "{B3254A1C-0A73-4A04-9B96-268E3F66CD38}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gcXtraReports.Runtime.TestResources", "gcXtraReports.TestResources\gcXtraReports.Runtime.TestResources.csproj", "{4C4B84C6-A3BF-42AC-9E7B-393387DBA4D1}"
 EndProject

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System;
+using Caliburn.Micro;
 using DevExpress.XtraReports.UI;
 using GeniusCode.XtraReports.Runtime.Support;
 
@@ -22,29 +23,29 @@ namespace GeniusCode.XtraReports.Runtime
             return datasource;
         }
 
-        public static int SetRootHashCodeOnSubreport(this XRSubreport subreportContainer)
+        public static Guid SetRootHashCodeOnSubreport(this XRSubreport subreportContainer, IEventAggregator aggregator)
         {
             var myReportBase = (gcXtraReport)subreportContainer.NavigateToBaseReport();
-            var hashcode = myReportBase.RuntimeRootReportHashCode;
+            var guid = myReportBase.RootReportGuid;
 
-            if (hashcode == 0)
+            if (guid == Guid.Empty)
                 throw new Exception("Report did not have a root hashcode.");
 
-            var subreportAsMyReportbase = ConvertReportSourceToMyReportBaseIfNeeded(subreportContainer);
+            var subreportAsMyReportbase = ConvertReportSourceToMyReportBaseIfNeeded(subreportContainer, aggregator);
 
             if (subreportAsMyReportbase != null)
-                subreportAsMyReportbase.RuntimeRootReportHashCode = hashcode;
+                subreportAsMyReportbase.SetRootReportGuid(guid);
 
-            return hashcode;
+            return guid;
         }
 
-        private static gcXtraReport ConvertReportSourceToMyReportBaseIfNeeded(this XRSubreport subreportContainer)
+        private static gcXtraReport ConvertReportSourceToMyReportBaseIfNeeded(this XRSubreport subreportContainer, IEventAggregator aggregator)
         {
             var subreportAsMyReportbase = subreportContainer.ReportSource as gcXtraReport;
 
             if (subreportAsMyReportbase == null)
             {
-                subreportAsMyReportbase = subreportContainer.ReportSource.ConvertReportToMyReportBase();
+                subreportAsMyReportbase = subreportContainer.ReportSource.ConvertReportToMyReportBase(aggregator);
                 subreportContainer.ReportSource = subreportAsMyReportbase;
             }
 

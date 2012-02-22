@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Caliburn.Micro;
 using DevExpress.XtraReports.UI;
 using FluentAssertions;
 using GeniusCode.XtraReports.Runtime.Actions;
@@ -70,7 +71,7 @@ namespace GeniusCode.XtraReports.Runtime.Specs.Steps
         public void GivenTheXtrasubreportEngineIsInitialized()
         {
             var facade = new ReportControlActionFacade(_action);
-            _controller = new ReportController(_report, facade);
+            _controller = new ReportController(new EventAggregator(),_report, facade);
             
         }
 

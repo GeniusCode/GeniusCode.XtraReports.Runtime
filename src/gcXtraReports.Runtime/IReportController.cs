@@ -5,7 +5,7 @@ using GeniusCode.XtraReports.Runtime.Support;
 
 namespace GeniusCode.XtraReports.Runtime
 {
-    public interface IReportController : IDisposable
+    public interface IReportController
     {
         gcXtraReport Print(Action<gcXtraReport> printAction);
     }

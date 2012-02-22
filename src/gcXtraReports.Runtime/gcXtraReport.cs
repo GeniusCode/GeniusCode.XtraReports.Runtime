@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Caliburn.Micro;
 using DevExpress.XtraReports;
@@ -12,18 +13,41 @@ namespace GeniusCode.XtraReports.Runtime.Support
         // http://devexpress.com/Support/Center/p/Q300888.aspx
     public class gcXtraReport : XtraReport
     {
+        private readonly IEventAggregator _aggregator;
         /*[SRCategory(ReportStringId.CatData)]
         public XRSerializableCollection<DesignTimeDataSourceDefinition> DesignTimeDataSources { get; set; }*/
 
-        public gcXtraReport()
+        public gcXtraReport(IEventAggregator aggregator)
         {
+            _aggregator = aggregator;
             /*DesignTimeDataSources = new XRSerializableCollection<DesignTimeDataSourceDefinition>();*/
         }
 
         /// <summary>
         /// Hashcode of Root Report at runtime, and not at design time.
         /// </summary>
-        public int RuntimeRootReportHashCode { get; set; }
+
+        private Guid _rootReportGuid;
+        public Guid RootReportGuid {get { return _rootReportGuid; }}
+        
+        public void SetRootReportGuid(Guid newGuid)
+        {
+            // We need this check, because this method get called multiple times,
+            // even after the value is first set!
+            if (_rootReportGuid == newGuid) return;
+
+
+            if (_rootReportGuid == Guid.Empty)
+                _rootReportGuid = newGuid;
+            else
+                throw new InvalidOperationException("Root report Guid may only be set once!");
+        }
+
+        public Guid InitRootReportGuid()
+        {
+            SetRootReportGuid(Guid.NewGuid());
+            return RootReportGuid;
+        }
 
 /*        protected override void DeclareCustomProperties()
         {
@@ -36,7 +60,7 @@ namespace GeniusCode.XtraReports.Runtime.Support
             // IMPORTANT: Must use an aggregator for End-User Designer, because reports are serialized / CodeDom - events cannot be attached
             // Reports pass themselves into the aggregator
             var message = new BeforeReportPrintMessage(this, e);
-            EventAggregatorSingleton.Instance.Publish(message);
+            _aggregator.Publish(message);
 
             base.OnBeforePrint(e);
         }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using DevExpress.XtraReports.UI;
 
@@ -5,12 +6,13 @@ namespace GeniusCode.XtraReports.Runtime.Messaging
 {
     public class ScopedControlBeforePrintMessage
     {
-        public int RootReportHashcode { get; private set; }
+        public Guid RootReportGuid { get; private set; }
         public XRControl Control { get; private set; }
 
-        public ScopedControlBeforePrintMessage(int rootReportHashcode, XRControl control)
+        public ScopedControlBeforePrintMessage(Guid rootReportGuid, XRControl control)
         {
-            RootReportHashcode = rootReportHashcode;
+            RootReportGuid = rootReportGuid;
+
             Control = control;
         }
     }

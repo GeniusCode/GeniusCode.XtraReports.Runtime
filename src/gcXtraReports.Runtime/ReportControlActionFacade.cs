@@ -28,26 +28,25 @@ namespace GeniusCode.XtraReports.Runtime.Actions
                              select action.ApplyToControlType).Distinct().ToList();
         }
 
+        private IEnumerable<IReportControlAction> GetActionsforControl(XRControl control)
+        {
+            var typeAppropriateActions = from action in _runtimeActions
+                                          where action.ApplyToControlType.IsInstanceOfType(control)
+                                          select action;
+
+            var predicatedActions = from action in typeAppropriateActions
+                                     where action.ActionPredicate(control)
+                                     select action;
+
+            return predicatedActions;
+        }
+
         public void AttemptActionsOnControl(XRControl control)
         {
             // TODO: Add Filter by Whitelist ReportActionName and/or ReportActionGroupName
 
-            // Optimization - ignore XRControls that we don't have ReportActions for
-            var foundMatchingRuntimeAction = (from type in _controlTypes
-                                              where type.IsInstanceOfType(control)
-                                              select type).Any();
-
-            if (foundMatchingRuntimeAction == false)
-                return;
-
-            // Predicates
-            var actions = from action in _runtimeActions
-                          where action.ActionPredicate(control)
-                          select action;
-
-            // Execute matching Runtime Actions
-            foreach (var action in actions)
-                action.ActionToApply.Invoke(control);
+            var actions = GetActionsforControl(control).ToList();
+            actions.ForEach(a=> a.ActionToApply.Invoke(control));
         }
     }
 }

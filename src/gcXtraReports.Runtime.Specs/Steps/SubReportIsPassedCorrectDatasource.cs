@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Caliburn.Micro;
 using DevExpress.XtraReports.UI;
 using FluentAssertions;
 using GeniusCode.XtraReports.Runtime.Actions;
 using GeniusCode.XtraReports.Runtime.Support;
+using GeniusCode.XtraReports.Runtime.Tests;
+using GeniusCode.XtraReports.Runtime.Tests.Unit;
 using GeniusCode.XtraReports.Runtime.UnitTests;
 using TechTalk.SpecFlow;
 using gcExtensions;
@@ -23,8 +26,6 @@ namespace GeniusCode.XtraReports.Runtime.Specs.Steps
         private Func<XtraReport, XRSubreport> _getContainerFunc;
         private gcXtraReport _newSubReport;
         private XRSubreport _newSubReportContainer;
-        private IReportControlActionFacade _actionFacade;
-        private GlobalMessageSubscriber _subscriber;
         private int _counter;
 
         private readonly HashSet<Person> _datasources = new HashSet<Person>();
@@ -97,7 +98,7 @@ namespace GeniusCode.XtraReports.Runtime.Specs.Steps
         [Given(@"the xtrasubreport engine is initialized")]
         public void GivenTheXtrasubreportEngineIsInitialized()
         {
-            _controller = new DataSourceTrackingController(_parentReport,(s,o)=> _counter++);
+            _controller = new DataSourceTrackingController(new EventAggregator(), _parentReport, (s, o) => _counter++);
         }
 
 
@@ -105,9 +106,9 @@ namespace GeniusCode.XtraReports.Runtime.Specs.Steps
         public void GivenTheXtrasubreportEngineIsInitializedWithDataSourceTracking()
         {
 
-            
 
-            _controller = new DataSourceTrackingController(_parentReport,(s,ds) =>
+
+            _controller = new DataSourceTrackingController(new EventAggregator(), _parentReport, (s, ds) =>
                                                              {
                                                                  _counter++;
 

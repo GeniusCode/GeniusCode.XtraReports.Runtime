@@ -1,102 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using Caliburn.Micro;
 using DevExpress.XtraReports.UI;
 using FluentAssertions;
 using GeniusCode.XtraReports.Runtime.Actions;
-using GeniusCode.XtraReports.Runtime.Messaging;
 using GeniusCode.XtraReports.Runtime.Support;
+using GeniusCode.XtraReports.Runtime.Tests.Unit;
+using GeniusCode.XtraReports.Runtime.UnitTests;
 using GeniusCode.XtraReports.Tests.Models;
 using GeniusCode.XtraReports.Tests.Reports;
 using NUnit.Framework;
 
-namespace GeniusCode.XtraReports.Runtime.UnitTests
+namespace GeniusCode.XtraReports.Runtime.Tests.Integration
 {
     [TestFixture]
-    public class GeneralUnitTests
+    public class General_scenarios
     {
-        /// <summary>
-        /// This test has been used to target an occurance of premature garbage collection!
-        /// </summary>
         [Test]
-        public void Should_survive_garbageCollection()
-        {
-            //Print a report using a controller
-            var color = Color.Green;
-            var action = new ReportControlAction<XtraReport>(r => true, r => r.BackColor = color);
-
-            var report0 = new XtraReport();
-
-            using (var c = new ReportController(report0, new ReportControlActionFacade(action)))
-            {
-                var newreport = c.Print(r => r.ExportToMemory());
-                newreport.BackColor.Should().Be(color);
-            }
-
-            // print a secondary report
-            var counter = 0;
-            var subReport = new XtraReport();
-            var container = new XRSubreport { ReportSource = subReport };
-
-            var detailBand = new DetailBand();
-            detailBand.Controls.Add(container);
-
-            var report = new XtraReport();
-            report.Bands.Add(detailBand);
-
-            report.DataSource = new[]
-                                    {
-                                        new object(),
-                                        new object(),
-                                        new object(),
-                                        new object()
-                                    };
-
-            using (var controller = new DataSourceTrackingController(report, (s, ds) => counter++))
-            {
-                var report4 = controller.Print(r => r.ExportToMemory());
-                counter.Should().Be(4);           
-            }
-            
-        }
-
-
-        [Test]
-        public void applies_to_entire_report()
+        public void Should_apply_actions_to_entire_report()
         {
             var color = Color.Green;
             var action = new ReportControlAction<XtraReport>(r => true, r => r.BackColor = color);
 
             var report = new XtraReport();
-            var newReport = new ReportController(report, new ReportControlActionFacade(action)).Print(r => r.ExportToMemory());
+            var newReport = new ReportController(new EventAggregator(), report, new ReportControlActionFacade(action)).Print(r => r.ExportToMemory());
 
             Assert.AreEqual(color, newReport.BackColor);
         }
 
         [Test]
-        public void predicate_prevents_applying_action()
+        public void Should_print_multiple_times_with_actions_firing_correct_count()
         {
-            const string transformText = "Jeremiah";
-            var action = new ReportControlAction<XRLabel>((l) => l.Text != string.Empty, (l) => l.Text = transformText);
-
-            var label1 = new XRLabel { Text = string.Empty };
-            var label2 = new XRLabel { Text = "ChangeMe" };
+            var counter = 0;
 
             var report = new XtraReport();
             report.Bands.Add(new DetailBand());
-            report.Bands[0].Controls.Add(label1);
-            report.Bands[0].Controls.Add(label2);
+            report.Bands[0].Controls.Add(new XRLine());
 
-            var newReport = new ReportController(report, new ReportControlActionFacade(action)).Print(r => r.ExportToMemory());
+            var facade =
+                new ReportControlActionFacade(ReportControlAction<XRLine>.WithNoPredicate(l =>
+                                                                                              {
+                                                                                                  l.ForeColor =
+                                                                                                      Color.Blue;
+                                                                                                  counter++;
+                                                                                              }));
 
-            var label1b = (XRLabel) newReport.Bands[0].Controls[0];
-            var label2b = (XRLabel)newReport.Bands[0].Controls[1];
+            var controller = new ReportController(new EventAggregator(), report,facade);
 
-            Assert.AreNotEqual(transformText, label1b.Text);
-            Assert.AreEqual(transformText, label2b.Text);
+            var newReport1 = controller.Print(r => r.ExportToMemory());
+            var newReport2 = controller.Print(r => r.ExportToMemory());
+
+            newReport1.Bands[0].Controls[0].ForeColor.Should().Be(Color.Blue,"Action should have been applied to control");
+            newReport2.Bands[0].Controls[0].ForeColor.Should().Be(Color.Blue, "Action should have been applied to control");
+
+            counter.Should().Be(2,"Action should only have fired once for each time");
         }
 
         [Test]
@@ -116,9 +75,9 @@ namespace GeniusCode.XtraReports.Runtime.UnitTests
             report.Bands[0].Controls.Add(table);
 
             //var subscriber = XRRuntimeSubscriber.SubscribeWithActions(action);
-            var reportb = new ReportController(report, new ReportControlActionFacade(action)).Print(r => r.ExportToMemory());
+            var reportb = new ReportController(new EventAggregator(), report, new ReportControlActionFacade(action)).Print(r => r.ExportToMemory());
 
-            var tableB = (XRTable) reportb.Bands[0].Controls[0];
+            var tableB = (XRTable)reportb.Bands[0].Controls[0];
             var rowB = tableB.Rows[0];
             var cellb = rowB.Cells[0];
 
@@ -129,31 +88,61 @@ namespace GeniusCode.XtraReports.Runtime.UnitTests
         }
 
         [Test]
-        public void Should_convert_subreport_to_myReportBase()
+        public void Should_convert_subreport_to_gc_xtra_report()
         {
             var report = new XtraReport();
             var detailBand = new DetailBand();
-            var subReportContainer = new XRSubreport {ReportSource = new XtraReport()};
+            var subReportContainer = new XRSubreport { ReportSource = new XtraReport() };
             report.Bands.Add(detailBand);
             detailBand.Controls.Add(subReportContainer);
 
 
-            var controller = new ReportController(report);
-            var newReport = controller.Print(p=> p.ExportToMemory());
+            var controller = new ReportController(new EventAggregator(), report);
+            var newReport = controller.Print(p => p.ExportToMemory());
 
-            var newContainer = (XRSubreport) newReport.Bands[0].Controls[0];
-            newContainer.ReportSource.GetType().Should().Be(typeof (gcXtraReport));
+            var newContainer = (XRSubreport)newReport.Bands[0].Controls[0];
+            newContainer.ReportSource.GetType().Should().Be(typeof(gcXtraReport));
+        }
+
+
+        [Test]
+        public void Should_fire_actions_against_item_in_subreport()
+        {
+            var report = new XtraReport();
+            var detailBand = new DetailBand();
+            report.Bands.Add(detailBand);
+
+
+            var subreport = new XtraReport();
+            var container = new XRSubreport {ReportSource = subreport, Name = "container"};
+            detailBand.Controls.Add(container);
+            
+
+            var subReportBand = new DetailBand();
+            subreport.Bands.Add(subReportBand);
+            subReportBand.Controls.Add(new XRLine {Name = "line"});
+
+            var facade =
+                new ReportControlActionFacade(ReportControlAction<XRLine>.WithNoPredicate(l => l.ForeColor = Color.Blue));
+
+            var report2 = new ReportController(new EventAggregator(), report, facade).Print(r => r.ExportToMemory());
+
+            var newSubreport =
+                ((XRSubreport) report2.Bands[0].Controls[0]).ReportSource;
+
+            ((XRLine) newSubreport.Bands[0].Controls[0]).ForeColor.Should().Be(Color.Blue);
 
         }
+
 
         [Test]
         public void Handler_wireup_should_be_predicatable()
         {
             var counter = 0;
-            
+
             var subReport = new XtraReport();
-            var container = new XRSubreport {ReportSource = subReport};
-            
+            var container = new XRSubreport { ReportSource = subReport };
+
             var detailBand = new DetailBand();
             detailBand.Controls.Add(container);
 
@@ -168,8 +157,8 @@ namespace GeniusCode.XtraReports.Runtime.UnitTests
                                         new object()
                                     };
 
-            
-            var controller = new DataSourceTrackingController(report, (s, ds) => counter++);
+
+            var controller = new DataSourceTrackingController(new EventAggregator(), report, (s, ds) => counter++);
             controller.Print(r => r.ExportToMemory());
             counter.Should().Be(4);
         }
@@ -177,7 +166,7 @@ namespace GeniusCode.XtraReports.Runtime.UnitTests
         [Test]
         public void Should_handle_detail_reports_with_subreport()
         {
-            var textvalues = new List<Tuple<int,string>>();
+            var textvalues = new List<Tuple<int, string>>();
             var report = new XtraReportWithSubReportInDetailReport();
             report.DataSource = new List<Person2>
                                     {
@@ -206,14 +195,14 @@ namespace GeniusCode.XtraReports.Runtime.UnitTests
                                     };
             int counter = 0;
             var action = ReportControlAction<XRLabel>.WithNoPredicate(l =>
-                                                              {
-                                                                  counter++;
-                                                                  textvalues.Add(new Tuple<int, string>(l.Report.GetHashCode(), l.Text));
-                                                              });
+            {
+                counter++;
+                textvalues.Add(new Tuple<int, string>(l.Report.GetHashCode(), l.Text));
+            });
             var facade = new ReportControlActionFacade(action);
 
-            var c = new ReportController(report, facade);
-            var newReport = c.Print(a=> a.ExportToMemory());
+            var c = new ReportController(new EventAggregator(), report, facade);
+            var newReport = c.Print(a => a.ExportToMemory());
             //Not safe for batch test runs GlobalMessageSubscriber.Singleton.Visitors.Count.Should().Be(2);
             //not safe for batchess counter.Should().Be(6);
 
@@ -258,7 +247,7 @@ namespace GeniusCode.XtraReports.Runtime.UnitTests
             });
             var facade = new ReportControlActionFacade(action);
 
-            var c = new ReportController(report, facade);
+            var c = new ReportController(new EventAggregator(), report, facade);
             var newReport = c.Print(a => a.ExportToMemory());
 
             counter.Should().Be(6);
@@ -296,7 +285,7 @@ namespace GeniusCode.XtraReports.Runtime.UnitTests
 
                                     };
             var detailReportBand = report.Controls.OfType<DetailReportBand>().Single();
-            var sr = (XRSubreport) detailReportBand.Bands[BandKind.Detail].Controls[0];
+            var sr = (XRSubreport)detailReportBand.Bands[BandKind.Detail].Controls[0];
             var label = (XRLabel)sr.ReportSource.Bands[BandKind.Detail].Controls[0];
             var counter = 0;
             label.BeforePrint += (s, o) => counter++;
@@ -305,4 +294,6 @@ namespace GeniusCode.XtraReports.Runtime.UnitTests
         }
 
     }
+
+
 }

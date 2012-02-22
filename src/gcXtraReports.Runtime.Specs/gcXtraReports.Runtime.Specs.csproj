@@ -112,9 +112,9 @@
       <Project>{007F71E6-FFA1-4511-BC93-4BDFBE2FD896}</Project>
       <Name>gcXtraReports.Runtime</Name>
     </ProjectReference>
-    <ProjectReference Include="..\gcXtraReports.Runtime.UnitTests\gcXtraReports.Runtime.UnitTests.csproj">
+    <ProjectReference Include="..\gcXtraReports.Runtime.UnitTests\gcXtraReports.Runtime.Tests.csproj">
       <Project>{B3254A1C-0A73-4A04-9B96-268E3F66CD38}</Project>
-      <Name>gcXtraReports.Runtime.UnitTests</Name>
+      <Name>gcXtraReports.Runtime.Tests</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
