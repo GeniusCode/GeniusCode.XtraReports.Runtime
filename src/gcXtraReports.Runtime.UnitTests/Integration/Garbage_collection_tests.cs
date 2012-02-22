@@ -1,5 +1,7 @@
+using System;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Serialization;
 using Caliburn.Micro;
 using DevExpress.XtraReports.UI;
 using FluentAssertions;
@@ -13,49 +15,55 @@ namespace GeniusCode.XtraReports.Runtime.Tests.Integration
     [TestFixture]
     public class Garbage_collection_tests
     {
-        /// <summary>
-        /// This test has been used to target an occurance of premature garbage collection!
-        /// </summary>
-        [Test]
-        public void Should_survive_garbage_collection()
+        public class WeakReference<T> : WeakReference where T : class
         {
-            //Print a report using a controller
-            var color = Color.Green;
-            var action = new ReportControlAction<XtraReport>(r => true, r => r.BackColor = color);
+            public WeakReference(T target) : base(target)
+            {
+            }
 
-            var report0 = new XtraReport();
+            public WeakReference(TestAttribute target, bool trackResurrection) : base(target, trackResurrection)
+            {
+            }
 
-            var c = new ReportController(new EventAggregator(), report0, new ReportControlActionFacade(action));
+            protected WeakReference(SerializationInfo info, StreamingContext context) : base(info, context)
+            {
+            }
 
-            var newreport = c.Print(r => r.ExportToMemory());
-            newreport.BackColor.Should().Be(color);
+            public new T Target { 
+                get { return base.Target as T; }
+                set { base.Target = value; }
+            }
+        }
+        public static class WeakReferenceFactory
+        {
+            public static WeakReference<T> CreateWeakReference<T>(T target) where T : class
+            {
+                return new WeakReference<T>(target);
+            }
+        }
 
+        [Test]
+        public void Should_remove_controllers_and_visitor_out_of_scope()
+        {
+            IEventAggregator e = new EventAggregator();
+            var report = new XtraReport
+                             {
+                                 DataSource = new[] {new object()}
+                             };
+            
+            var contollerReference = WeakReferenceFactory.CreateWeakReference(new ReportController(e,report));
+            var visitors = contollerReference.Target.Visitors;
+            
+            var report2 = contollerReference.Target.Print(r => r.ExportToMemory());
 
-            // print a secondary report
-            var counter = 0;
-            var subReport = new XtraReport();
-            var container = new XRSubreport { ReportSource = subReport };
+            GC.Collect();
 
-            var detailBand = new DetailBand();
-            detailBand.Controls.Add(container);
-
-            var report = new XtraReport();
-            report.Bands.Add(detailBand);
-
-            report.DataSource = new[]
-                                    {
-                                        new object(),
-                                        new object(),
-                                        new object(),
-                                        new object()
-                                    };
-
-            var controller = new DataSourceTrackingController(new EventAggregator(), report, (s, ds) => counter++);
-
-            var report4 = controller.Print(r => r.ExportToMemory());
-            counter.Should().Be(4);
-
-
-        }        
+            report2.Should().NotBeNull();
+            
+            // controller should not be alive
+            contollerReference.IsAlive.Should().BeFalse();
+            // no visitors should not be alive
+            visitors.Values.Any(wr => wr.IsAlive).Should().BeFalse();
+        }
     }
 }
