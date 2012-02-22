@@ -16,9 +16,9 @@ namespace GeniusCode.XtraReports.Runtime.Support
 
         #region Constructor
 
-        public int ReportHashcode
+        public Guid ReportGuid
         {
-            get { return _report.RuntimeRootReportHashCode; }
+            get { return _report.RootReportGuid; }
         }
 
         public ReportVisitor(IEventAggregator eventAggregator, gcXtraReport report)
@@ -81,8 +81,8 @@ namespace GeniusCode.XtraReports.Runtime.Support
 
         private void PublishScopedMessage(XRControl control)
         {
-            var hashcode = ((gcXtraReport)control.NavigateToBaseReport()).RuntimeRootReportHashCode;
-            var message = new ScopedControlBeforePrintMessage(hashcode, control);
+            var guid = ((gcXtraReport)control.NavigateToBaseReport()).RootReportGuid;
+            var message = new ScopedControlBeforePrintMessage(guid, control);
             _eventAggregator.Publish(message);
         }
 

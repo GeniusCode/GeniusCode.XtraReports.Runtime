@@ -31,6 +31,34 @@ namespace GeniusCode.XtraReports.Runtime.Tests.Integration
         }
 
         [Test]
+        public void Should_print_multiple_times_with_actions_firing_correct_count()
+        {
+            var counter = 0;
+
+            var report = new XtraReport();
+            report.Bands.Add(new DetailBand());
+            report.Bands[0].Controls.Add(new XRLine());
+
+            var facade =
+                new ReportControlActionFacade(ReportControlAction<XRLine>.WithNoPredicate(l =>
+                                                                                              {
+                                                                                                  l.ForeColor =
+                                                                                                      Color.Blue;
+                                                                                                  counter++;
+                                                                                              }));
+
+            var controller = new ReportController(new EventAggregator(), report,facade);
+
+            var newReport1 = controller.Print(r => r.ExportToMemory());
+            var newReport2 = controller.Print(r => r.ExportToMemory());
+
+            newReport1.Bands[0].Controls[0].ForeColor.Should().Be(Color.Blue,"Action should have been applied to control");
+            newReport2.Bands[0].Controls[0].ForeColor.Should().Be(Color.Blue, "Action should have been applied to control");
+
+            counter.Should().Be(2,"Action should only have fired once for each time");
+        }
+
+        [Test]
         public void Should_fire_actions_on_table_members()
         {
             var transformColor = Color.Blue;
@@ -74,6 +102,36 @@ namespace GeniusCode.XtraReports.Runtime.Tests.Integration
 
             var newContainer = (XRSubreport)newReport.Bands[0].Controls[0];
             newContainer.ReportSource.GetType().Should().Be(typeof(gcXtraReport));
+        }
+
+
+        [Test]
+        public void Should_fire_actions_against_item_in_subreport()
+        {
+            var report = new XtraReport();
+            var detailBand = new DetailBand();
+            report.Bands.Add(detailBand);
+
+
+            var subreport = new XtraReport();
+            var container = new XRSubreport {ReportSource = subreport, Name = "container"};
+            detailBand.Controls.Add(container);
+            
+
+            var subReportBand = new DetailBand();
+            subreport.Bands.Add(subReportBand);
+            subReportBand.Controls.Add(new XRLine {Name = "line"});
+
+            var facade =
+                new ReportControlActionFacade(ReportControlAction<XRLine>.WithNoPredicate(l => l.ForeColor = Color.Blue));
+
+            var report2 = new ReportController(new EventAggregator(), report, facade).Print(r => r.ExportToMemory());
+
+            var newSubreport =
+                ((XRSubreport) report2.Bands[0].Controls[0]).ReportSource;
+
+            ((XRLine) newSubreport.Bands[0].Controls[0]).ForeColor.Should().Be(Color.Blue);
+
         }
 
 

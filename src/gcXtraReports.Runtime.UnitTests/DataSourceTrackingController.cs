@@ -13,13 +13,6 @@ namespace GeniusCode.XtraReports.Runtime.Tests
         private readonly Action<XRSubreport, Object> _nestedActon;
 
 
-
-        /*public DataSourceTrackingController(XtraReport view, Action<XRSubreport,Object> nestedActon)
-            : base(view)
-        {
-            _nestedActon = nestedActon;
-        }*/
-
         public DataSourceTrackingController(IEventAggregator eventAggregator, XtraReport view, Action<XRSubreport, object> nestedActon) : base(eventAggregator, view, null)
         {
             _nestedActon = nestedActon;

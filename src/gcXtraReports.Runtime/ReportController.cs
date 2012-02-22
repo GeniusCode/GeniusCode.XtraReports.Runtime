@@ -21,7 +21,7 @@ namespace GeniusCode.XtraReports.Runtime
             _eventAggregator = eventAggregator;
             _view = view;
             _injectedFacade = injectedFacade;
-            
+            _eventAggregator.Subscribe(this);
             _additionalActions = new List<IReportControlAction>();
             _facades = new Lazy<IEnumerable<IReportControlActionFacade>>(BuildActionFacades);
         }
@@ -71,9 +71,7 @@ namespace GeniusCode.XtraReports.Runtime
         public gcXtraReport Print(Action<gcXtraReport> printAction)
         {                 
             _printingReport = _view.ConvertReportToMyReportBase(_eventAggregator);
-            _printingReport.RuntimeRootReportHashCode = _printingReport.GetHashCode();
-
-            _eventAggregator.Subscribe(this);
+            _printingReport.InitRootReportGuid();
 
             printAction(_printingReport);
             return _printingReport;
@@ -100,7 +98,7 @@ namespace GeniusCode.XtraReports.Runtime
             if (_printingReport == null)
                 return false;
 
-            return message.RootReportHashcode == _printingReport.RuntimeRootReportHashCode;
+            return message.RootReportGuid == _printingReport.RootReportGuid;
         }
 
 
@@ -110,7 +108,7 @@ namespace GeniusCode.XtraReports.Runtime
             if (_printingReport == null)
                 return false;
 
-            return message.Report.RuntimeRootReportHashCode == _printingReport.RuntimeRootReportHashCode;
+            return message.Report.RootReportGuid == _printingReport.RootReportGuid;
         }
 
         private void VisitMethodRecursively(BeforeReportPrintMessage message)
