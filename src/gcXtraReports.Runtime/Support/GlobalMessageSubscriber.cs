@@ -54,6 +54,7 @@ namespace GeniusCode.XtraReports.Runtime.Support
                 Visitors.Add(incomingHashcode, new WeakReference(visitor));
                 visitor.Visit();
             }
+            
         }
     }
 }

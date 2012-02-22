@@ -11,7 +11,7 @@ namespace GeniusCode.XtraReports.Runtime.Support
         private readonly XtraReport _view;
         private readonly IReportControlActionFacade _injectedFacade;
 
-        private ScopedMessageSubscriber _subscriber;
+        public ScopedMessageSubscriber Subscriber { get; private set; }
 
         public ReportController(XtraReport view, IReportControlActionFacade injectedFacade = null)
         {
@@ -37,7 +37,7 @@ namespace GeniusCode.XtraReports.Runtime.Support
             _toDos.Add(action);
         }
 
-        public gcXtraReport Print(Action<XtraReport> printAction)
+        public gcXtraReport Print(Action<gcXtraReport> printAction)
         {
             var actions = OnGetDefautActions();
             var defaultFacade = new ReportControlActionFacade(actions.ToArray());
@@ -48,7 +48,7 @@ namespace GeniusCode.XtraReports.Runtime.Support
 
             var newView = _view.ConvertReportToMyReportBase();
             newView.RuntimeRootReportHashCode = newView.GetHashCode();
-            _subscriber = new ScopedMessageSubscriber(newView.RuntimeRootReportHashCode, c =>
+            Subscriber = new ScopedMessageSubscriber(newView.RuntimeRootReportHashCode, c =>
                                                                                         {
                                                                                             defaultFacade.
                                                                                                 AttemptActionsOnControl(
@@ -68,7 +68,7 @@ namespace GeniusCode.XtraReports.Runtime.Support
 
         public void Dispose()
         {
-            _subscriber.Dispose();
+            Subscriber.Dispose();
         }
     }
 }

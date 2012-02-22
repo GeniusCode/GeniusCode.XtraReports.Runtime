@@ -51,7 +51,7 @@ namespace GeniusCode.XtraReports.Runtime.Specs.Steps
         {
             _subReportFilePath = Helpers.GetNewTempFile() + ".repx";
             Path.GetDirectoryName(_subReportFilePath).Should().NotBeNullOrEmpty();
-            var subReport = new gcXtraReport();
+            var subReport = new XtraReport();
             subReport.SaveLayout(_subReportFilePath);
             File.Exists(_subReportFilePath).Should().BeTrue();
         }

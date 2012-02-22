@@ -6,11 +6,15 @@ using GeniusCode.XtraReports.Runtime.Messaging;
 
 namespace GeniusCode.XtraReports.Runtime.Support
 {
-    internal class ScopedMessageSubscriber : IHandle<ScopedControlBeforePrintMessage>, IDisposable
+    public class ScopedMessageSubscriber : IHandle<ScopedControlBeforePrintMessage>, IDisposable
     {
         private readonly IEventAggregator _aggregator;
         private readonly int _rootHashCode;
         private readonly Action<XRControl> _handler;
+
+        public int RootHashCode { get { return _rootHashCode; }}
+
+
 
         public ScopedMessageSubscriber(int rootHashCode, Action<XRControl> handler)
             : this(EventAggregatorSingleton.Instance, rootHashCode, handler)
