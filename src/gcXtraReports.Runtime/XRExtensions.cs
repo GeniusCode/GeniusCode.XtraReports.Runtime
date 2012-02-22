@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Caliburn.Micro;
 using DevExpress.Data.Browsing;
 using DevExpress.XtraReports.Native.Data;
 using DevExpress.XtraReports.UI;
@@ -13,7 +14,7 @@ namespace GeniusCode.XtraReports.Runtime
 {
     public static class XRExtensions
     {
-        public static gcXtraReport ConvertReportToMyReportBase(this XtraReport report)
+        public static gcXtraReport ConvertReportToMyReportBase(this XtraReport report, IEventAggregator aggregator)
         {
             if (report == null) return null;
 
@@ -22,16 +23,16 @@ namespace GeniusCode.XtraReports.Runtime
             if (convertReportToMyReportBase != null)
                 return convertReportToMyReportBase;
 
-            return report.CloneLayoutAsMyReportBase();
+            return report.CloneLayoutAsMyReportBase(aggregator);
         }
 
-        public static gcXtraReport CloneLayoutAsMyReportBase(this XtraReport report)
+        public static gcXtraReport CloneLayoutAsMyReportBase(this XtraReport report, IEventAggregator aggregator)
         {
             var stream = new MemoryStream();
             report.SaveLayout(stream);
             stream.Position = 0;
 
-            var newReport = new gcXtraReport();
+            var newReport = new gcXtraReport(aggregator);
             newReport.LoadLayout(stream);
             newReport.DataSource = report.DataSource;
 

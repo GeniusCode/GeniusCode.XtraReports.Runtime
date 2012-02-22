@@ -65,7 +65,7 @@ namespace GeniusCode.XtraReports.Runtime.Support
         private void Visit(XRControl control)
         {
             // Set Root Hashcode On SubReport Here:
-            control.TryAs<XRSubreport>(sr => sr.SetRootHashCodeOnSubreport());
+            control.TryAs<XRSubreport>(sr => sr.SetRootHashCodeOnSubreport(_eventAggregator));
 
             // Self
             PublishScopedMessage(control);

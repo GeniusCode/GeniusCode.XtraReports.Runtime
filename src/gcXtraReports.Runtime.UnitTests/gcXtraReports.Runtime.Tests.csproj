@@ -8,8 +8,8 @@
     <ProjectGuid>{B3254A1C-0A73-4A04-9B96-268E3F66CD38}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GeniusCode.XtraReports.Runtime.UnitTests</RootNamespace>
-    <AssemblyName>gcXtraReports.Runtime.UnitTests</AssemblyName>
+    <RootNamespace>GeniusCode.XtraReports.Runtime.Tests</RootNamespace>
+    <AssemblyName>gcXtraReports.Runtime.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\XtraSubreportEngine\</SolutionDir>
@@ -56,11 +56,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApiTweaks.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Integration\Garbage_collection_tests.cs" />
     <Compile Include="DataSourceTrackingController.cs" />
-    <Compile Include="GeneralUnitTests.cs" />
+    <Compile Include="Integration\General_scenarios.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unit\ReportControlActionFacade_tests.cs" />
+    <Compile Include="Unit\Report_controller_tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -80,6 +82,7 @@
       <Name>gcXtraReports.Runtime.TestResources</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

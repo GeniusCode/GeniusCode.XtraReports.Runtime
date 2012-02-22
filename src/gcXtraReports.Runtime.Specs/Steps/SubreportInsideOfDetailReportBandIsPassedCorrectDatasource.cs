@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Caliburn.Micro;
 using DevExpress.XtraReports.UI;
 using FluentAssertions;
 using GeniusCode.XtraReports.Runtime.Support;
+using GeniusCode.XtraReports.Runtime.Tests;
+using GeniusCode.XtraReports.Runtime.Tests.Unit;
 using GeniusCode.XtraReports.Runtime.UnitTests;
 using TechTalk.SpecFlow;
 
@@ -103,7 +106,7 @@ namespace GeniusCode.XtraReports.Runtime.Specs.Steps
         [Given(@"the xtrasubreport engine is initialized")]
         public void GivenTheXtrasubreportEngineIsInitialized()
         {
-            _controller = new DataSourceTrackingController(_parentReport,(s,o)=>
+            _controller = new DataSourceTrackingController(new EventAggregator(), _parentReport, (s, o) =>
                                                                              {
                                                                                  _counter++;
                                                                                  _datasources.Add(o);

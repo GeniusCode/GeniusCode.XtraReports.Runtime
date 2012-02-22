@@ -12,11 +12,13 @@ namespace GeniusCode.XtraReports.Runtime.Support
         // http://devexpress.com/Support/Center/p/Q300888.aspx
     public class gcXtraReport : XtraReport
     {
+        private readonly IEventAggregator _aggregator;
         /*[SRCategory(ReportStringId.CatData)]
         public XRSerializableCollection<DesignTimeDataSourceDefinition> DesignTimeDataSources { get; set; }*/
 
-        public gcXtraReport()
+        public gcXtraReport(IEventAggregator aggregator)
         {
+            _aggregator = aggregator;
             /*DesignTimeDataSources = new XRSerializableCollection<DesignTimeDataSourceDefinition>();*/
         }
 
@@ -36,7 +38,7 @@ namespace GeniusCode.XtraReports.Runtime.Support
             // IMPORTANT: Must use an aggregator for End-User Designer, because reports are serialized / CodeDom - events cannot be attached
             // Reports pass themselves into the aggregator
             var message = new BeforeReportPrintMessage(this, e);
-            EventAggregatorSingleton.Instance.Publish(message);
+            _aggregator.Publish(message);
 
             base.OnBeforePrint(e);
         }

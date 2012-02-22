@@ -3,7 +3,7 @@ using Caliburn.Micro;
 
 namespace Caliburn.Micro
 {
-    public class EventAggregatorSingleton
+/*    public class EventAggregatorSingleton
     {
         public static IEventAggregator Instance { get; private set; }
 
@@ -11,6 +11,6 @@ namespace Caliburn.Micro
         {
             Instance = new EventAggregator();
         }
-    }
+    }*/
 
 }

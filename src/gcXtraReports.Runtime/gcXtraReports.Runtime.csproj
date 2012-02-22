@@ -62,7 +62,6 @@
     <Compile Include="Caliburn.Micro\EventAggregator_partial.cs" />
     <Compile Include="IReportController.cs" />
     <Compile Include="Actions\PassDataSourceToSubreportControlAction.cs" />
-    <Compile Include="Support\ScopedMessageSubscriber.cs" />
     <Compile Include="ReportController.cs" />
     <Compile Include="ReportControlActionFacade.cs" />
     <Compile Include="IReportControlActionFacade.cs" />

@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Reflection;
+using Caliburn.Micro;
 using DevExpress.XtraReports.UI;
 using FluentAssertions;
 using GeniusCode.XtraReports.Runtime.Actions;
@@ -20,6 +21,7 @@ namespace GeniusCode.XtraReports.Runtime.Specs.Steps
             ;
 
         private string _filename2;
+        private ReportController _controller;
 
         [Given(@"a report exists")]
         public void GivenAReportExists()
@@ -61,8 +63,8 @@ namespace GeniusCode.XtraReports.Runtime.Specs.Steps
         public void WhenTheReportRuns()
         {
             _filename2 = Helpers.GetNewTempFile() + ".html";
-            var controller = new ReportController(_report, new ReportControlActionFacade(_action));
-            controller.Print(p => p.ExportToHtml(_filename2));
+            _controller = new ReportController(new EventAggregator(), _report, new ReportControlActionFacade(_action));
+            _controller.Print(p => p.ExportToHtml(_filename2));
         }
 
         [Then(@"the image should be placed into the report")]
