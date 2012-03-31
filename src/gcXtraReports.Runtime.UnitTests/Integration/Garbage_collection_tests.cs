@@ -6,6 +6,7 @@ using Caliburn.Micro;
 using DevExpress.XtraReports.UI;
 using FluentAssertions;
 using GeniusCode.XtraReports.Runtime.Actions;
+using GeniusCode.XtraReports.Runtime.Support;
 using GeniusCode.XtraReports.Runtime.Tests.Unit;
 using GeniusCode.XtraReports.Runtime.UnitTests;
 using NUnit.Framework;
@@ -42,28 +43,47 @@ namespace GeniusCode.XtraReports.Runtime.Tests.Integration
             }
         }
 
-        [Test]
+/*        [Test] 
         public void Should_remove_controllers_and_visitor_out_of_scope()
         {
+
+            WeakReference<ReportVisitor> wr;
+            WeakReference<ReportController> rwr;
+            WeakReference<gcXtraReport> reportwr;
+            WeakReference<XtraReport> initialReport_reference;
+            
             IEventAggregator e = new EventAggregator();
-            var report = new XtraReport
+            using (var report = new XtraReport
                              {
-                                 DataSource = new[] {new object()}
-                             };
-            
-            var contollerReference = WeakReferenceFactory.CreateWeakReference(new ReportController(e,report));
-            var visitors = contollerReference.Target.Visitors;
-            
-            var report2 = contollerReference.Target.Print(r => r.ExportToMemory());
+                                 DataSource = new[] { new object() }
+                             })
+            {
+
+                initialReport_reference = WeakReferenceFactory.CreateWeakReference(report);
+
+
+                using (var controller = new ReportController(e, report))
+                {
+                    using (gcXtraReport ouputReport = controller.Print(r => r.ExportToMemory()))
+                    {
+                        reportwr = WeakReferenceFactory.CreateWeakReference(ouputReport);
+                    }
+                    wr = WeakReferenceFactory.CreateWeakReference(controller.Visitors.First().Value);
+                    rwr = WeakReferenceFactory.CreateWeakReference(controller);
+
+                }
+            }
+
 
             GC.Collect();
-
-            report2.Should().NotBeNull();
+            initialReport_reference.IsAlive.Should().BeFalse();
+            wr.IsAlive.Should().BeFalse();
             
             // controller should not be alive
-            contollerReference.IsAlive.Should().BeFalse();
-            // no visitors should not be alive
-            visitors.Values.Any(wr => wr.IsAlive).Should().BeFalse();
-        }
+            rwr.IsAlive.Should().BeFalse();
+            reportwr.IsAlive.Should().BeFalse();
+            
+            
+        }*/
     }
 }

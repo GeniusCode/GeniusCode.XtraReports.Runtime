@@ -8,7 +8,7 @@ using gcExtensions;
 
 namespace GeniusCode.XtraReports.Runtime.Support
 {
-    internal class ReportVisitor : IDisposable
+    public class ReportVisitor : IDisposable
 
     {
         private readonly IEventAggregator _eventAggregator;
@@ -40,17 +40,15 @@ namespace GeniusCode.XtraReports.Runtime.Support
         {
             var hashcode = control.GetHashCode();
 
-            if (!_listenedInstances.Contains(hashcode))
+            if (!_listenedInstances.ContainsKey(hashcode))
             {
                 control.BeforePrint += control_BeforePrint;
-                _listenedInstances.Add(hashcode);
+                _listenedInstances.Add(hashcode, control);
             }
-
-            //control.BeforePrint -= control_BeforePrint;
         }
 
 
-        private readonly List<int> _listenedInstances = new List<int>();
+        private readonly Dictionary<int, XRControl> _listenedInstances = new Dictionary<int,XRControl>();
 
         private void control_BeforePrint(object sender, System.Drawing.Printing.PrintEventArgs e)
         {
@@ -144,7 +142,9 @@ namespace GeniusCode.XtraReports.Runtime.Support
 
         public void Dispose()
         {
-            //TODO: Remove event handlers
+            
+            _listenedInstances.Values.ToList().ForEach(i=> i.BeforePrint -= control_BeforePrint);            
+            _listenedInstances.Clear();
         }
     }
 }

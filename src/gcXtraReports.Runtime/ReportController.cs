@@ -9,7 +9,7 @@ using GeniusCode.XtraReports.Runtime.Support;
 
 namespace GeniusCode.XtraReports.Runtime
 {
-    public class ReportController : IReportController, IHandle<ScopedControlBeforePrintMessage>, IHandle<BeforeReportPrintMessage>
+    public class ReportController : IReportController, IHandle<ScopedControlBeforePrintMessage>, IHandle<BeforeReportPrintMessage>, IDisposable
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly XtraReport _view;
@@ -17,7 +17,7 @@ namespace GeniusCode.XtraReports.Runtime
 
         public ReportController(IEventAggregator eventAggregator, XtraReport view, IReportControlActionFacade injectedFacade = null)
         {
-            Visitors = new Dictionary<int, WeakReference>();
+            Visitors = new Dictionary<int, ReportVisitor>();
             _eventAggregator = eventAggregator;
             _view = view;
             _injectedFacade = injectedFacade;
@@ -58,9 +58,9 @@ namespace GeniusCode.XtraReports.Runtime
             OnRegisterAdditionalActions();
             var additionalFacade = new ReportControlActionFacade(_additionalActions.ToArray());
             output.Add(additionalFacade);
-            
+
             //THIRD: Add Injected Actions
-            if(_injectedFacade != null)
+            if (_injectedFacade != null)
                 output.Add(_injectedFacade);
 
             return output;
@@ -69,7 +69,7 @@ namespace GeniusCode.XtraReports.Runtime
 
 
         public gcXtraReport Print(Action<gcXtraReport> printAction)
-        {                 
+        {
             _printingReport = _view.ConvertReportToMyReportBase(_eventAggregator);
             _printingReport.InitRootReportGuid();
 
@@ -119,20 +119,26 @@ namespace GeniusCode.XtraReports.Runtime
             // a report can print multiple times if it is a subreport
             if (Visitors.ContainsKey(incomingHashcode)) return;
 
-            using (var visitor = new ReportVisitor(_eventAggregator, message.Report))
-            {
-                Visitors.Add(incomingHashcode, new WeakReference(visitor));
-                visitor.Visit();
-            }           
+            var visitor = new ReportVisitor(_eventAggregator, message.Report);
+            Visitors.Add(incomingHashcode, visitor);
+            visitor.Visit();
+
         }
 
-        public readonly Dictionary<int, WeakReference> Visitors;
+        public readonly Dictionary<int, ReportVisitor> Visitors;
         private Lazy<IEnumerable<IReportControlActionFacade>> _facades;
 
         public void Handle(BeforeReportPrintMessage message)
         {
             if (!ShouldApplyMessage(message)) return;
             VisitMethodRecursively(message);
+        }
+
+        public void Dispose()
+        {
+            Visitors.Values.ToList().ForEach(v=> v.Dispose());
+            Visitors.Clear();
+            _eventAggregator.Unsubscribe(this);
         }
     }
 }

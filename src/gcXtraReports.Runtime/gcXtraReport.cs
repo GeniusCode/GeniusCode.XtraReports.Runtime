@@ -13,7 +13,7 @@ namespace GeniusCode.XtraReports.Runtime.Support
         // http://devexpress.com/Support/Center/p/Q300888.aspx
     public class gcXtraReport : XtraReport
     {
-        private readonly IEventAggregator _aggregator;
+        private IEventAggregator _aggregator;
         /*[SRCategory(ReportStringId.CatData)]
         public XRSerializableCollection<DesignTimeDataSourceDefinition> DesignTimeDataSources { get; set; }*/
 
@@ -64,5 +64,13 @@ namespace GeniusCode.XtraReports.Runtime.Support
 
             base.OnBeforePrint(e);
         }
+
+        protected override void OnDisposing()
+        {
+            _aggregator = null;
+            base.OnDisposing();
+           
+        }
     }
+
 }
